@@ -162,7 +162,7 @@ function HarpoonList:resolve_displayed(displayed)
                 )
             end
             local index_in_new_list =
-                index_of(new_list, self.items[index], self.config)
+            index_of(new_list, self.items[index], self.config)
             if index_in_new_list == -1 then
                 new_list[i] = self.items[index]
             end
