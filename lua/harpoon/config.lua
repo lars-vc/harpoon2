@@ -10,7 +10,7 @@ local DEFAULT_LIST = "__harpoon_files"
 M.DEFAULT_LIST = DEFAULT_LIST
 
 ---@alias HarpoonListItem {value: any, context: any}
----@alias HarpoonListFileItem {value: string, context: {row: number, col: number}}
+---@alias HarpoonListFileItem {value: string, context: {row: number, col: number, viewport: Dictionary}}
 ---@alias HarpoonListFileOptions {split: boolean, vsplit: boolean, tabedit: boolean}
 
 ---@class HarpoonPartialConfigItem
@@ -134,6 +134,10 @@ function M.get_default_config()
                 Extensions.extensions:emit(Extensions.event_names.NAVIGATE, {
                     buffer = bufnr,
                 })
+                -- lars
+                if true then
+                    vim.fn.winrestview(list_item.context.viewport)
+                end
             end,
 
             ---@param list_item_a HarpoonListItem
@@ -177,6 +181,8 @@ function M.get_default_config()
                     context = {
                         row = pos[1],
                         col = pos[2],
+                        -- lars
+                        viewport = vim.fn.winsaveview(),
                     },
                 }
             end,
@@ -184,6 +190,7 @@ function M.get_default_config()
             BufLeave = function(arg, list)
                 local bufnr = arg.buf
                 local bufname = vim.api.nvim_buf_get_name(bufnr)
+                bufname = normalize_path(bufname, list.config.get_root_dir())
                 local item = list:get_by_display(bufname)
 
                 if item then
@@ -200,6 +207,7 @@ function M.get_default_config()
 
                     item.context.row = pos[1]
                     item.context.col = pos[2]
+                    item.context.viewport = vim.fn.winsaveview()
                 end
             end,
 
